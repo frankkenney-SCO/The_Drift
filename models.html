@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Drift Calculators | Cleo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dark-blue:#00064B; --royal-blue:#0056B3; --cleo-blue:#0083CA; --sky-blue:#00AEEF;
+    --teal:#00A4C9; --dark-gray:#757A83; --light-gray:#F3F4F5; --black:#000000; --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--black);background:var(--white);line-height:1.55;}
+  .wrap{max-width:900px;margin:0 auto;padding:0 28px;}
+
+  .hero{background:var(--dark-blue);color:var(--white);padding:44px 0 34px;}
+  .hero .logo{height:24px;margin-bottom:28px;display:block;}
+  .hero h1{font-size:28px;font-weight:800;margin:0 0 12px;letter-spacing:-0.01em;max-width:660px;}
+  .hero p{font-size:15px;color:#C7D2EE;margin:0;max-width:620px;}
+
+  .persona-tabbar{position:sticky;top:0;z-index:10;background:var(--dark-blue);border-bottom:1px solid rgba(255,255,255,.12);}
+  .persona-tabbar .wrap{display:flex;gap:4px;overflow-x:auto;}
+  .persona-tab{appearance:none;border:none;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;color:#9FB3E0;padding:16px 20px 14px;border-bottom:3px solid transparent;white-space:nowrap;transition:color .15s ease,border-color .15s ease;}
+  .persona-tab:hover{color:var(--white);}
+  .persona-tab.active{color:var(--white);border-bottom-color:var(--sky-blue);}
+
+  .model-tabbar{position:sticky;top:53px;z-index:9;background:var(--white);border-bottom:1px solid var(--light-gray);}
+  .model-tabbar .wrap{display:flex;gap:4px;overflow-x:auto;}
+  .model-tab{appearance:none;border:none;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;color:var(--dark-gray);padding:13px 16px 11px;border-bottom:3px solid transparent;white-space:nowrap;transition:color .15s ease,border-color .15s ease;}
+  .model-tab:hover{color:var(--royal-blue);}
+  .model-tab.active{color:var(--cleo-blue);border-bottom-color:var(--cleo-blue);}
+
+  .persona-group{display:none;}
+  .persona-group.active{display:block;}
+  .model-panel{display:none;padding:28px 0 46px;}
+  .model-panel.active{display:block;}
+
+  .drift-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:6px;}
+  .drift-header h2{font-size:20px;font-weight:700;color:var(--cleo-blue);margin:0;}
+  .drift-header .lesson{font-size:12px;color:var(--dark-gray);font-weight:600;letter-spacing:.03em;}
+
+  .setup{border:1px solid var(--light-gray);border-radius:6px;padding:16px 20px;margin-bottom:24px;background:#FAFBFC;}
+  .setup-row{display:flex;gap:14px;padding:7px 0;}
+  .setup-row + .setup-row{border-top:1px solid var(--light-gray);}
+  .setup-label{flex:0 0 84px;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--cleo-blue);text-transform:uppercase;padding-top:1px;}
+  .setup-text{font-size:13.5px;color:#26282C;}
+  .setup-text strong{color:var(--black);}
+
+  .chart-svg{width:100%;height:auto;display:block;}
+  .plan{fill:none;stroke:var(--dark-blue);stroke-width:2;}
+  .actual{fill:none;stroke:var(--sky-blue);stroke-width:3;stroke-dasharray:7 6;}
+  .actual2{fill:none;stroke:var(--royal-blue);stroke-width:3;stroke-dasharray:7 6;}
+  .drift-fill{fill:var(--cleo-blue);fill-opacity:.10;}
+  .guidance-fill{fill:var(--dark-gray);fill-opacity:.08;stroke:var(--dark-gray);stroke-width:0.75;stroke-dasharray:3 2;}
+  .drift-fill2{fill:var(--royal-blue);fill-opacity:.10;}
+  .dot-plan2{fill:var(--royal-blue);}
+  .scatter-dot{fill:var(--dark-gray);opacity:.35;r:3;}
+  .dot-plan{fill:var(--dark-blue);}
+  .dot-actual{fill:var(--sky-blue);}
+  .leader{stroke:#C7CBD1;stroke-width:1;stroke-dasharray:2 3;}
+  .legend-txt{font-size:12px;fill:var(--dark-gray);font-family:'Inter',sans-serif;}
+  .stage-title{font-size:14px;font-weight:700;fill:var(--black);font-family:'Inter',sans-serif;}
+  .stage-sub{font-size:11.5px;fill:var(--dark-gray);font-family:'Inter',sans-serif;}
+  .drift-label{font-size:14px;font-weight:700;fill:var(--cleo-blue);font-family:'Inter',sans-serif;}
+
+  .dispute-box{border:1px solid var(--light-gray);border-radius:6px;padding:16px 18px;margin-top:8px;background:#FAFBFC;}
+  .dispute-title{font-size:13.5px;font-weight:700;color:var(--dark-blue);margin-bottom:6px;}
+  .dispute-note{font-size:12.5px;color:var(--dark-gray);margin:0 0 14px;max-width:70ch;}
+  .dispute-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;font-size:13px;color:#26282C;}
+  .dispute-row.static span:first-child{color:var(--dark-gray);}
+  .dispute-row.total{border-top:1px solid var(--light-gray);margin-top:4px;padding-top:10px;font-weight:700;color:var(--black);}
+  .dispute-row label{font-size:13px;color:#26282C;flex:0 0 auto;}
+  .dispute-row input[type="range"]{flex:1;accent-color:var(--cleo-blue);}
+  .dispute-value{font-weight:700;color:var(--cleo-blue);min-width:40px;text-align:right;}
+
+  footer{background:var(--dark-blue);color:#C7D2EE;padding:36px 0 26px;text-align:center;}
+  footer .logo{height:20px;margin-bottom:8px;}
+  footer .tagline{font-size:13px;font-style:italic;color:#9FB3E0;margin:0 0 16px;}
+  footer .fine{font-size:11.5px;color:#6E82B8;}
+
+  @media (max-width:640px){
+    .hero h1{font-size:23px;}
+    .persona-tab{padding:13px 14px 11px;font-size:13.5px;}
+    .model-tab{padding:11px 12px 9px;font-size:12.5px;}
+    .setup-row{flex-direction:column;gap:2px;}
+    .setup-label{flex:none;}
+  }
+</style>
+</head>
+<body><div style="background:#00064B;padding:9px 20px;font-family:Inter,sans-serif;font-size:12px;text-align:center;">
+<a href="index.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">Whitepaper</a>&#183;
+<a href="calculator.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">Calculator</a>&#183;
+<a href="models.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">Drift Models</a>&#183;
+<a href="college.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">College Version</a>&#183;
+<a href="eli9.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">4th Grade Version</a>
+</div>
+
+<div class="hero">
+  <div class="wrap">
+    <svg class="logo" viewBox="0 0 1000 402.5604" xmlns="http://www.w3.org/2000/svg" aria-label="Cleo">
+      <polygon fill="#fff" points="462.9977 .0026 353.9496 25.1776 268.6021 394.8625 371.8433 394.8625 463.0127 .0026 462.9977 .0026"/>
+      <path fill="#fff" d="M314.1318,113.6827c2.7474-10.9849,3.8445-21.9646,3.8445-32.4009C317.9763,28.0131,274.5904,0,191.1199,0,100.4987,0,62.0595,29.1151,40.6383,121.9251L10.4364,251.529C2.194,286.6722,0,302.0551,0,316.8843c0,58.2101,39.5414,85.6697,123.5654,85.6697,53.2686,0,91.1645-11.5334,115.3281-36.2454,19.2222-19.2172,29.6584-44.4778,40.0899-93.3635l4.3929-20.8626h-108.1826l-8.7909,38.4394c-6.0384,27.4545-13.7272,35.6969-32.4009,35.6969-17.0232,0-25.809-7.1404-25.809-19.7708,0-4.3929.5435-9.8828,2.7423-19.2221l38.993-166.9513c7.6888-32.9545,11.5333-42.8322,34.5998-42.8322,15.3728,0,24.7071,7.1354,24.7071,19.2172,0,4.3979-.5484,10.4364-2.1989,18.1252l-8.2324,35.6969h107.0908l8.2373-36.7989Z"/>
+      <path fill="#fff" d="M682.9658,208.1416c3.2204-12.6251,4.247-24.1635,4.1815-35.1433-.3019-49.9777-39.9993-75.2382-118.5335-75.2382-81.2816,0-116.259,27.4545-133.9112,104.3432l-18.7291,80.7332c-4.2771,18.6737-5.8321,34.0464-5.7565,46.6816.3421,56.0111,51.5175,73.0393,117.4213,73.0393,81.8301,0,115.7306-24.1687,131.7877-92.2665l3.7488-15.9212h-98.8533l-3.2104,14.2707c-4.8105,21.4162-11.9057,28.013-27.2834,28.013-13.7272,0-21.4615-6.0434-21.5269-17.0283-.015-3.2959.5083-6.5919,2.6468-15.9261l9.1129-37.8908h145.5251l13.38-57.6667ZM591.6051,176.2892c.0252,3.8445-.4982,7.689-1.0315,9.8878l-7.4927,32.9495h-48.8707l8.5544-37.3423c3.7488-15.9263,11.9459-23.0667,26.7651-23.0667,14.8292,0,22.0099,6.0384,22.0753,17.5717"/>
+      <path fill="#fff" d="M949.025,222.9739c4.5438-19.7757,6.8737-34.6,7.0246-46.1332.6893-53.8222-37.5185-80.1847-116.7421-80.1847-87.2646,0-120.3449,33.5029-136.2259,102.7028l-17.5768,76.3351c-4.5338,19.7757-6.8686,34.5949-7.0196,46.1332-.6944,54.3657,36.975,80.7332,116.7421,80.7332,86.7162,0,120.8884-34.6,136.2157-102.7028l17.5819-76.8837ZM856.9044,185.078c-.0303,2.7474-.0654,4.9465-1.1976,9.8828l-26.0656,112.0322c-4.5338,19.2273-13.7423,27.4646-29.7994,27.4646-14.4468,0-22.3873-7.1404-22.2213-20.3142.0404-2.7525.0756-6.0484,1.1976-9.8927l26.0809-112.5807c4.5186-18.6737,13.7272-26.911,29.7844-26.911,14.4568,0,22.3973,7.1404,22.2212,20.3191"/>
+      <path fill="#fff" d="M983.0975,110.9167c1.575,0,2.1284-.5536,2.1284-2.1739v-.6491c0-1.1121-.6038-1.6204-1.9472-1.6204h-1.2027v4.4434h1.0215ZM986.0162,123.4664c-.5132-.7397-.6493-1.2479-.6493-2.4506v-3.6129c0-1.9475-.4226-2.4103-2.1788-2.4103h-1.1121v8.4738h-4.8155v-20.7921h7.0848c4.0307,0,5.6057,1.1573,5.6057,4.2167v2.4053c0,2.2242-.7899,3.4268-2.9638,4.0759,2.36.5536,3.1048,1.6204,3.1048,4.4434v3.0091c0,1.2982.2715,1.9473.9711,2.6418h-5.047ZM983.5152,98.6939c-7.7845,0-14.1248,6.4812-14.1248,14.4468,0,8.0563,6.2497,14.4468,14.0744,14.4468,7.8702,0,14.1752-6.4359,14.1752-14.4015,0-8.1518-6.2095-14.4921-14.1248-14.4921M983.4648,129.6255c-9.118,0-16.4344-7.3166-16.4344-16.4848s7.3164-16.4848,16.4848-16.4848c9.2135,0,16.4848,7.2713,16.4848,16.4344,0,9.3092-7.2261,16.5352-16.5352,16.5352"/>
+    </svg>
+    <h1>One law, three business models: a digital promise drifts from physical or financial reality, and the gap is the leak.</h1>
+    <p>Every business model here carries Margin Drift. Each one also carries Utilization Drift — the same shape, applied to whatever's actually scarce for them: truck-hours, warehouse slots, or working capital.</p>
+  </div>
+</div>
+
+<nav class="persona-tabbar">
+  <div class="wrap">
+    <button class="persona-tab active" data-persona="warehouse" onclick="showPersona('warehouse')">Warehouse</button>
+    <button class="persona-tab" data-persona="brokerage" onclick="showPersona('brokerage')">Brokerages</button>
+    <button class="persona-tab" data-persona="carrier" onclick="showPersona('carrier')">Asset-Based Carriers</button>
+  </div>
+</nav>
+
+<!-- ================= WAREHOUSE ================= -->
+<div class="persona-group active" id="persona-warehouse" data-default="margin">
+  <nav class="model-tabbar">
+    <div class="wrap">
+      <button class="model-tab active" data-persona="warehouse" data-model="margin" onclick="showModel('warehouse','margin')">Margin Drift</button>
+      <button class="model-tab" data-persona="warehouse" data-model="utilization" onclick="showModel('warehouse','utilization')">Warehouse Utilization Drift</button>
+    </div>
+  </nav>
+  <div class="wrap">
+
+    <div class="model-panel active" id="panel-warehouse-margin" data-persona="warehouse">
+      <div class="drift-header"><h2>Margin Drift</h2><span class="lesson">The master arc</span></div>
+      <div class="setup">
+        <div class="setup-row"><span class="setup-label">Who</span><span class="setup-text"><strong>Warehouses and 3PLs</strong> — the same order-economics erosion, billed per unit or per pallet instead of per mile.</span></div>
+        <div class="setup-row"><span class="setup-label">Model</span><span class="setup-text">Priced on the perfect order: quoted rate, planned dwell, no accessorials. Real orders erode that margin at every stage — extra dwell, damage claims, storage overages — and it only ever subtracts, so it compounds linearly toward settlement.</span></div>
+        <div class="setup-row"><span class="setup-label">Currency</span><span class="setup-text">Dollars of margin — quoted rate vs. realized rate.</span></div>
+      </div>
+      <svg class="chart-svg" viewBox="0 0 620 280" role="img">
+        <title>Margin Drift chart</title>
+        <desc>A flat planned line and a dashed actual line that steadily diverges from Ask through Commitment, Status, and Settlement, with the widening gap shaded and labeled Margin Drift.</desc>
+        <line x1="60" y1="20" x2="90" y2="20" class="plan"/><text class="legend-txt" x="96" y="24">Planned</text>
+        <line x1="180" y1="20" x2="210" y2="20" class="actual"/><text class="legend-txt" x="216" y="24">Actual</text>
+        <path class="drift-fill" d="M60,90 L227,120 L393,155 L560,195 L560,90 L393,90 L227,90 L60,90 Z"/>
+        <path class="plan" d="M60,90 L227,90 L393,90 L560,90"/>
+        <path class="actual" d="M60,90 L227,120 L393,155 L560,195"/>
+        <circle class="dot-plan" cx="60" cy="90" r="5"/><circle class="dot-plan" cx="227" cy="90" r="5"/><circle class="dot-plan" cx="393" cy="90" r="5"/><circle class="dot-plan" cx="560" cy="90" r="5"/>
+        <circle class="dot-actual" cx="60" cy="90" r="5"/><circle class="dot-actual" cx="227" cy="120" r="5"/><circle class="dot-actual" cx="393" cy="155" r="5"/><circle class="dot-actual" cx="560" cy="195" r="5"/>
+        <text class="drift-label" x="470" y="145" text-anchor="middle">Margin Drift</text>
+        <line class="leader" x1="60" y1="95" x2="60" y2="210"/><line class="leader" x1="227" y1="125" x2="227" y2="210"/><line class="leader" x1="393" y1="160" x2="393" y2="210"/><line class="leader" x1="560" y1="200" x2="560" y2="210"/>
+        <text class="stage-title" x="60" y="230" text-anchor="middle">Ask</text><text class="stage-sub" x="60" y="247" text-anchor="middle">943 / 940 sent</text>
+        <text class="stage-title" x="227" y="230" text-anchor="middle">Commitment</text><text class="stage-sub" x="227" y="247" text-anchor="middle">ship-by / appointment</text>
+        <text class="stage-title" x="393" y="230" text-anchor="middle">Status</text><text class="stage-sub" x="393" y="247" text-anchor="middle">pick, pack, stage, load</text>
+        <text class="stage-title" x="560" y="230" text-anchor="middle">Settlement</text><text class="stage-sub" x="560" y="247" text-anchor="middle">944 / 945, pay</text>
+      </svg>
+    </div>
+
+    <div class="model-panel" id="panel-warehouse-utilization" data-persona="warehouse">
+      <div class="drift-header"><h2>Warehouse Utilization Drift</h2><span class="lesson">Same shape as the truck, different asset</span></div>
+      <div class="setup">
+        <div class="setup-row"><span class="setup-label">Who</span><span class="setup-text"><strong>Warehouses and 3PLs</strong> — the building's capacity, not a single order.</span></div>
+        <div class="setup-row"><span class="setup-label">Model</span><span class="setup-text">Priced on the assumption that storage slots and dock doors are continuously occupied and earning. Each turnover cycle opens a gap and closes it again once new inventory arrives — cyclical, not compounding, same shape as a truck's utilization cycle, just measured in square footage instead of miles.</span></div>
+        <div class="setup-row"><span class="setup-label">Currency</span><span class="setup-text">Slot and dock-hours — storage capacity that held no inventory or produced no throughput.</span></div>
+      </div>
+      <svg class="chart-svg" viewBox="0 0 620 280" role="img">
+        <title>Warehouse Utilization Drift chart</title>
+        <desc>A flat planned line and a dashed actual line that dips while a storage slot or dock is idle between turnovers, then fully recovers once new inventory is put away, with the dip shaded and labeled Warehouse Utilization Drift.</desc>
+        <line x1="60" y1="20" x2="90" y2="20" class="plan"/><text class="legend-txt" x="96" y="24">Planned</text>
+        <line x1="180" y1="20" x2="210" y2="20" class="actual"/><text class="legend-txt" x="216" y="24">Actual</text>
+        <path class="drift-fill" d="M60,90 L227,165 L393,180 L560,90 L560,90 L393,90 L227,90 L60,90 Z"/>
+        <path class="plan" d="M60,90 L227,90 L393,90 L560,90"/>
+        <path class="actual" d="M60,90 L227,165 L393,180 L560,90"/>
+        <circle class="dot-plan" cx="60" cy="90" r="5"/><circle class="dot-plan" cx="227" cy="90" r="5"/><circle class="dot-plan" cx="393" cy="90" r="5"/><circle class="dot-plan" cx="560" cy="90" r="5"/>
+        <circle class="dot-actual" cx="60" cy="90" r="5"/><circle class="dot-actual" cx="227" cy="165" r="5"/><circle class="dot-actual" cx="393" cy="180" r="5"/><circle class="dot-actual" cx="560" cy="90" r="5"/>
+        <text class="drift-label" x="310" y="205" text-anchor="middle">Warehouse Utilization Drift</text>
+        <line class="leader" x1="60" y1="95" x2="60" y2="230"/><line class="leader" x1="227" y1="170" x2="227" y2="230"/><line class="leader" x1="393" y1="185" x2="393" y2="230"/><line class="leader" x1="560" y1="95" x2="560" y2="230"/>
+        <text class="stage-title" x="60" y="250" text-anchor="middle">Vacated</text><text class="stage-sub" x="60" y="267" text-anchor="middle">slot emptied</text>
+        <text class="stage-title" x="227" y="250" text-anchor="middle">Idle</text><text class="stage-sub" x="227" y="267" text-anchor="middle">unassigned capacity</text>
+        <text class="stage-title" x="393" y="250" text-anchor="middle">Receipt</text><text class="stage-sub" x="393" y="267" text-anchor="middle">new inbound arrives</text>
+        <text class="stage-title" x="560" y="250" text-anchor="middle">Putaway</text><text class="stage-sub" x="560" y="267" text-anchor="middle">slot filled again</text>
+      </svg>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= BROKERAGES ================= -->
+<div class="persona-group" id="persona-brokerage" data-default="margin">
+  <nav class="model-tabbar">
+    <div class="wrap">
+      <button class="model-tab active" data-persona="brokerage" data-model="margin" onclick="showModel('brokerage','margin')">Margin &amp; Utilization Drift</button>
+    </div>
+  </nav>
+  <div class="wrap">
+
+    <div class="model-panel active" id="panel-brokerage-margin" data-persona="brokerage">
+      <div class="drift-header"><h2>Margin &amp; Utilization Drift</h2><span class="lesson">Same second axis, cash instead of hours</span></div>
+      <div class="setup">
+        <div class="setup-row"><span class="setup-label">Who</span><span class="setup-text"><strong>Brokerages</strong> — margin risk lands at Commitment, utilization risk lands at Settlement. Two different mechanisms, same order.</span></div>
+        <div class="setup-row"><span class="setup-label">Model</span><span class="setup-text">The diamond at Commitment is guidance, not drift — a CRO who tells investors "margin between A% and B%" is stating that range on purpose, and landing anywhere inside it is the plan working as intended. Real Margin Drift only starts the moment the actual spread breaks through the top or bottom edge of that band. Status is just an operational checkpoint against carrier data to trigger close-out, not a new source of drift. The second drift opens once the carrier is paid: cash goes out, sits idle while the shipper hasn't paid yet, then recovers when they finally do. Same open-hold-recover cycle a truck runs between loads or a storage slot runs between turnovers — just working capital instead of a truck or a slot.</span></div>
+        <div class="setup-row"><span class="setup-label">Currency</span><span class="setup-text">Two currencies in one chart — dollars of margin at Commitment, cash-days of idle working capital at Settlement.</span></div>
+      </div>
+      <svg class="chart-svg" viewBox="0 0 620 300" role="img">
+        <title>Combined Margin and Utilization Drift chart for brokerages</title>
+        <desc>A flat planned line runs the whole way. Between Ask and Commitment, a shaded diamond bisected by the plan line represents the normal guidance range -- landing anywhere inside it is expected. A small excursion breaking below the diamond's lower edge, shaded in a different color, represents actual Margin Drift -- only the breakout counts. The line stays flat through Status, a neutral checkpoint. After the carrier is paid, the line dips into a triangle and recovers back near plan when the shipper actually pays, representing Utilization Drift -- working capital held idle -- shaded in a third color.</desc>
+        <line x1="60" y1="20" x2="90" y2="20" class="plan"/><text class="legend-txt" x="96" y="24">Planned</text>
+        <line x1="180" y1="20" x2="210" y2="20" class="actual"/><text class="legend-txt" x="216" y="24">Margin volatility</text>
+        <line x1="330" y1="20" x2="360" y2="20" class="actual2"/><text class="legend-txt" x="366" y="24">Utilization drift</text>
+
+        <path class="guidance-fill" d="M55,90 L113,72 L170,90 L113,108 Z"/>
+        <path class="drift-fill" d="M85,99 L92,118 L100,104 Z"/>
+        <path class="drift-fill2" d="M400,90 L490,170 L580,90 Z"/>
+
+        <path class="plan" d="M55,90 L170,90 L285,90 L400,90 L580,90"/>
+        <path class="actual" d="M55,90 L113,72 L170,90"/>
+        <path class="actual" d="M55,90 L85,99 L92,118 L100,104 L113,108 L170,90"/>
+        <path class="actual2" d="M400,90 L490,170 L580,90"/>
+
+        <circle class="dot-plan" cx="55" cy="90" r="5"/><circle class="dot-plan" cx="170" cy="90" r="5"/><circle class="dot-plan" cx="285" cy="90" r="5"/><circle class="dot-plan" cx="400" cy="90" r="5"/><circle class="dot-plan" cx="580" cy="90" r="5"/>
+        <circle class="dot-plan2" cx="490" cy="170" r="5"/>
+
+        <text class="legend-txt" x="113" y="60" text-anchor="middle">guidance range</text>
+        <text class="drift-label" x="92" y="140" text-anchor="middle">Margin Drift</text>
+        <text class="drift-label" x="490" y="145" text-anchor="middle" fill="var(--royal-blue)">Utilization Drift</text>
+
+        <line class="leader" x1="55" y1="95" x2="55" y2="230"/>
+        <line class="leader" x1="170" y1="95" x2="170" y2="230"/>
+        <line class="leader" x1="285" y1="95" x2="285" y2="230"/>
+        <line class="leader" x1="400" y1="95" x2="400" y2="230"/>
+        <line class="leader" x1="490" y1="175" x2="490" y2="230"/>
+        <line class="leader" x1="580" y1="95" x2="580" y2="230"/>
+
+        <text class="stage-title" x="55" y="250" text-anchor="middle">Ask</text><text class="stage-sub" x="55" y="267" text-anchor="middle">shipper quote</text>
+        <text class="stage-title" x="170" y="250" text-anchor="middle">Commitment</text><text class="stage-sub" x="170" y="267" text-anchor="middle">spread locks, either way</text>
+        <text class="stage-title" x="285" y="250" text-anchor="middle">Status</text><text class="stage-sub" x="285" y="267" text-anchor="middle">close-out trigger</text>
+        <text class="stage-title" x="400" y="250" text-anchor="middle">Carrier paid</text><text class="stage-sub" x="400" y="267" text-anchor="middle">cash goes out</text>
+        <text class="stage-title" x="490" y="250" text-anchor="middle">Held</text><text class="stage-sub" x="490" y="267" text-anchor="middle">cash still out</text>
+        <text class="stage-title" x="580" y="250" text-anchor="middle">Shipper pays</text><text class="stage-sub" x="580" y="267" text-anchor="middle">recovers, ~day 58</text>
+      </svg>
+
+      <div class="dispute-box">
+        <div class="dispute-title">Detention dispute — resolved at "Carrier paid"</div>
+        <p class="dispute-note">A double hit, not one: cash still goes out to the carrier at whatever's approved, <em>and</em> the admin cost of disputing it hits margin regardless of outcome. Only the uncollected share of the detention itself is a separate, additional loss.</p>
+        <div class="dispute-row">
+          <label for="disputeSlider">Detention collected</label>
+          <input type="range" id="disputeSlider" min="0" max="100" value="30" oninput="updateDispute(this.value)">
+          <span id="disputePct" class="dispute-value">30%</span>
+        </div>
+        <div class="dispute-row static">
+          <span>Detention billed</span><span>$150</span>
+        </div>
+        <div class="dispute-row static">
+          <span>Admin / dispute cost (fixed, either way)</span><span>−$35</span>
+        </div>
+        <div class="dispute-row static">
+          <span>Uncollected detention</span><span id="disputeUncollected">−$105</span>
+        </div>
+        <div class="dispute-row total">
+          <span>Net margin impact</span><span id="disputeNet">−$140</span>
+        </div>
+      </div>
+
+      <h3 style="margin-top:32px;">The real signal: blended margin over time</h3>
+      <p style="font-size:13.5px;color:#26282C;max-width:70ch;margin:0 0 16px;">The diamond is per-load variance, and it's assumed — closing above or below the guided range on any single quote is the model working as intended. Real Margin Drift isn't a point in the diamond. It's the blended average, across a week or a month of loads, drifting away from target for long enough that it stops being noise.</p>
+      <svg class="chart-svg" viewBox="0 0 620 340" role="img">
+        <title>Blended margin control chart over eight weeks</title>
+        <desc>Individual loads scatter noisily around a 12 percent target inside a 10 to 14 percent guidance band for the first five weeks. The weekly blended average stays inside the band through week five, then drifts below it for weeks six through eight, and that sustained break below the band, not any single load, is shaded and labeled as the real Margin Drift.</desc>
+
+        <path class="guidance-fill" d="M40,78 L580,78 L580,102 L40,102 Z" stroke-dasharray="0"/>
+        <text class="legend-txt" x="45" y="72">14% band edge</text>
+        <text class="legend-txt" x="45" y="116">10% band edge</text>
+        <line class="plan" x1="40" y1="90" x2="580" y2="90"/>
+        <text class="legend-txt" x="585" y="94">12% target</text>
+
+        <path class="drift-fill" d="M417,108 L489,118 L560,122 L560,102 L417,102 Z"/>
+
+        <circle class="scatter-dot" cx="48" cy="72"/><circle class="scatter-dot" cx="54" cy="102"/><circle class="scatter-dot" cx="66" cy="80"/><circle class="scatter-dot" cx="72" cy="96"/>
+        <circle class="scatter-dot" cx="119" cy="70"/><circle class="scatter-dot" cx="125" cy="110"/><circle class="scatter-dot" cx="137" cy="85"/><circle class="scatter-dot" cx="143" cy="100"/>
+        <circle class="scatter-dot" cx="191" cy="65"/><circle class="scatter-dot" cx="197" cy="105"/><circle class="scatter-dot" cx="209" cy="78"/><circle class="scatter-dot" cx="215" cy="95"/>
+        <circle class="scatter-dot" cx="262" cy="75"/><circle class="scatter-dot" cx="268" cy="112"/><circle class="scatter-dot" cx="280" cy="88"/><circle class="scatter-dot" cx="286" cy="102"/>
+        <circle class="scatter-dot" cx="334" cy="68"/><circle class="scatter-dot" cx="340" cy="108"/><circle class="scatter-dot" cx="352" cy="82"/><circle class="scatter-dot" cx="358" cy="98"/>
+        <circle class="scatter-dot" cx="405" cy="88"/><circle class="scatter-dot" cx="411" cy="128"/><circle class="scatter-dot" cx="423" cy="100"/><circle class="scatter-dot" cx="429" cy="118"/>
+        <circle class="scatter-dot" cx="477" cy="98"/><circle class="scatter-dot" cx="483" cy="138"/><circle class="scatter-dot" cx="495" cy="108"/><circle class="scatter-dot" cx="501" cy="128"/>
+        <circle class="scatter-dot" cx="548" cy="102"/><circle class="scatter-dot" cx="554" cy="142"/><circle class="scatter-dot" cx="566" cy="112"/><circle class="scatter-dot" cx="572" cy="130"/>
+
+        <path class="actual" d="M60,88 L131,92 L203,85 L274,94 L346,89 L417,108 L489,118 L560,122"/>
+        <circle class="dot-actual" cx="60" cy="88" r="4"/><circle class="dot-actual" cx="131" cy="92" r="4"/><circle class="dot-actual" cx="203" cy="85" r="4"/><circle class="dot-actual" cx="274" cy="94" r="4"/><circle class="dot-actual" cx="346" cy="89" r="4"/>
+        <circle class="dot-actual" cx="417" cy="108" r="4"/><circle class="dot-actual" cx="489" cy="118" r="4"/><circle class="dot-actual" cx="560" cy="122" r="4"/>
+
+        <text class="drift-label" x="489" y="150" text-anchor="middle">Margin Drift</text>
+
+        <text class="stage-sub" x="60" y="245" text-anchor="middle">Wk 1</text>
+        <text class="stage-sub" x="131" y="245" text-anchor="middle">Wk 2</text>
+        <text class="stage-sub" x="203" y="245" text-anchor="middle">Wk 3</text>
+        <text class="stage-sub" x="274" y="245" text-anchor="middle">Wk 4</text>
+        <text class="stage-sub" x="346" y="245" text-anchor="middle">Wk 5</text>
+        <text class="stage-sub" x="417" y="245" text-anchor="middle">Wk 6</text>
+        <text class="stage-sub" x="489" y="245" text-anchor="middle">Wk 7</text>
+        <text class="stage-sub" x="560" y="245" text-anchor="middle">Wk 8</text>
+
+        <text class="legend-txt" x="40" y="270">Small dots: individual loads (assumed noise). Blue line: weekly blended margin (the actual signal).</text>
+      </svg>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= ASSET-BASED CARRIERS ================= -->
+<div class="persona-group" id="persona-carrier" data-default="margin">
+  <nav class="model-tabbar">
+    <div class="wrap">
+      <button class="model-tab active" data-persona="carrier" data-model="margin" onclick="showModel('carrier','margin')">Margin Drift</button>
+      <button class="model-tab" data-persona="carrier" data-model="utilization" onclick="showModel('carrier','utilization')">Utilization Drift</button>
+    </div>
+  </nav>
+  <div class="wrap">
+
+    <div class="model-panel active" id="panel-carrier-margin" data-persona="carrier">
+      <div class="drift-header"><h2>Margin Drift</h2><span class="lesson">The master arc</span></div>
+      <div class="setup">
+        <div class="setup-row"><span class="setup-label">Who</span><span class="setup-text"><strong>Asset-based carriers</strong> — companies that own the truck and sell capacity directly.</span></div>
+        <div class="setup-row"><span class="setup-label">Model</span><span class="setup-text">Priced on the perfect order: quoted rate, planned lane, full margin as quoted. Every real-world stage can only subtract from that plan, never add back — so the drift compounds roughly linearly the further down the process you go. Detention sits inside this, but precisely: the delay itself isn't the loss, since a fully-paid detention claim is revenue-neutral. The loss is the collection gap — billed detention minus what's actually approved and paid at invoice reconciliation, before the invoice is ever accepted.</span></div>
+        <div class="setup-row"><span class="setup-label">Currency</span><span class="setup-text">Dollars of margin — quoted rate vs. realized rate.</span></div>
+      </div>
+      <svg class="chart-svg" viewBox="0 0 620 280" role="img">
+        <title>Margin Drift chart</title>
+        <desc>A flat planned line and a dashed actual line that steadily diverges from Ask through Commitment, Status, and Settlement, with the widening gap shaded and labeled Margin Drift.</desc>
+        <line x1="60" y1="20" x2="90" y2="20" class="plan"/><text class="legend-txt" x="96" y="24">Planned</text>
+        <line x1="180" y1="20" x2="210" y2="20" class="actual"/><text class="legend-txt" x="216" y="24">Actual</text>
+        <path class="drift-fill" d="M60,90 L227,120 L393,155 L560,195 L560,90 L393,90 L227,90 L60,90 Z"/>
+        <path class="plan" d="M60,90 L227,90 L393,90 L560,90"/>
+        <path class="actual" d="M60,90 L227,120 L393,155 L560,195"/>
+        <circle class="dot-plan" cx="60" cy="90" r="5"/><circle class="dot-plan" cx="227" cy="90" r="5"/><circle class="dot-plan" cx="393" cy="90" r="5"/><circle class="dot-plan" cx="560" cy="90" r="5"/>
+        <circle class="dot-actual" cx="60" cy="90" r="5"/><circle class="dot-actual" cx="227" cy="120" r="5"/><circle class="dot-actual" cx="393" cy="155" r="5"/><circle class="dot-actual" cx="560" cy="195" r="5"/>
+        <text class="drift-label" x="470" y="145" text-anchor="middle">Margin Drift</text>
+        <line class="leader" x1="60" y1="95" x2="60" y2="210"/><line class="leader" x1="227" y1="125" x2="227" y2="210"/><line class="leader" x1="393" y1="160" x2="393" y2="210"/><line class="leader" x1="560" y1="200" x2="560" y2="210"/>
+        <text class="stage-title" x="60" y="230" text-anchor="middle">Ask</text><text class="stage-sub" x="60" y="247" text-anchor="middle">tender</text>
+        <text class="stage-title" x="227" y="230" text-anchor="middle">Commitment</text><text class="stage-sub" x="227" y="247" text-anchor="middle">accept / book</text>
+        <text class="stage-title" x="393" y="230" text-anchor="middle">Status</text><text class="stage-sub" x="393" y="247" text-anchor="middle">in transit</text>
+        <text class="stage-title" x="560" y="230" text-anchor="middle">Settlement</text><text class="stage-sub" x="560" y="247" text-anchor="middle">pay</text>
+      </svg>
+    </div>
+
+    <div class="model-panel" id="panel-carrier-utilization" data-persona="carrier">
+      <div class="drift-header"><h2>Utilization Drift</h2><span class="lesson">Zooms into Status</span></div>
+      <div class="setup">
+        <div class="setup-row"><span class="setup-label">Who</span><span class="setup-text">The same <strong>asset-based carriers</strong> — but about the truck, not the order.</span></div>
+        <div class="setup-row"><span class="setup-label">Model</span><span class="setup-text">Priced on the assumption the truck earns during every available hour. Each load cycle opens a utilization gap and closes it again once the truck is loaded — cyclical, not compounding.</span></div>
+        <div class="setup-row"><span class="setup-label">Currency</span><span class="setup-text">Truck-hours — capacity that produced no revenue.</span></div>
+      </div>
+      <svg class="chart-svg" viewBox="0 0 620 280" role="img">
+        <title>Utilization Drift chart</title>
+        <desc>A flat planned line and a dashed actual line that dips sharply during repositioning and dwell, then fully recovers once the truck is loaded again, with the dip shaded and labeled Utilization Drift.</desc>
+        <line x1="60" y1="20" x2="90" y2="20" class="plan"/><text class="legend-txt" x="96" y="24">Planned</text>
+        <line x1="180" y1="20" x2="210" y2="20" class="actual"/><text class="legend-txt" x="216" y="24">Actual</text>
+        <path class="drift-fill" d="M60,90 L227,165 L393,180 L560,90 L560,90 L393,90 L227,90 L60,90 Z"/>
+        <path class="plan" d="M60,90 L227,90 L393,90 L560,90"/>
+        <path class="actual" d="M60,90 L227,165 L393,180 L560,90"/>
+        <circle class="dot-plan" cx="60" cy="90" r="5"/><circle class="dot-plan" cx="227" cy="90" r="5"/><circle class="dot-plan" cx="393" cy="90" r="5"/><circle class="dot-plan" cx="560" cy="90" r="5"/>
+        <circle class="dot-actual" cx="60" cy="90" r="5"/><circle class="dot-actual" cx="227" cy="165" r="5"/><circle class="dot-actual" cx="393" cy="180" r="5"/><circle class="dot-actual" cx="560" cy="90" r="5"/>
+        <text class="drift-label" x="310" y="205" text-anchor="middle">Utilization Drift</text>
+        <line class="leader" x1="60" y1="95" x2="60" y2="230"/><line class="leader" x1="227" y1="170" x2="227" y2="230"/><line class="leader" x1="393" y1="185" x2="393" y2="230"/><line class="leader" x1="560" y1="95" x2="560" y2="230"/>
+        <text class="stage-title" x="60" y="250" text-anchor="middle">Delivery</text><text class="stage-sub" x="60" y="267" text-anchor="middle">load complete</text>
+        <text class="stage-title" x="227" y="250" text-anchor="middle">Reposition</text><text class="stage-sub" x="227" y="267" text-anchor="middle">deadhead travel</text>
+        <text class="stage-title" x="393" y="250" text-anchor="middle">Arrival</text><text class="stage-sub" x="393" y="267" text-anchor="middle">dwell + detention</text>
+        <text class="stage-title" x="560" y="250" text-anchor="middle">Departure</text><text class="stage-sub" x="560" y="267" text-anchor="middle">loaded again</text>
+      </svg>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <svg class="logo" viewBox="0 0 1000 402.5604" xmlns="http://www.w3.org/2000/svg" aria-label="Cleo">
+    <polygon fill="#fff" points="462.9977 .0026 353.9496 25.1776 268.6021 394.8625 371.8433 394.8625 463.0127 .0026 462.9977 .0026"/>
+    <path fill="#fff" d="M314.1318,113.6827c2.7474-10.9849,3.8445-21.9646,3.8445-32.4009C317.9763,28.0131,274.5904,0,191.1199,0,100.4987,0,62.0595,29.1151,40.6383,121.9251L10.4364,251.529C2.194,286.6722,0,302.0551,0,316.8843c0,58.2101,39.5414,85.6697,123.5654,85.6697,53.2686,0,91.1645-11.5334,115.3281-36.2454,19.2222-19.2172,29.6584-44.4778,40.0899-93.3635l4.3929-20.8626h-108.1826l-8.7909,38.4394c-6.0384,27.4545-13.7272,35.6969-32.4009,35.6969-17.0232,0-25.809-7.1404-25.809-19.7708,0-4.3929.5435-9.8828,2.7423-19.2221l38.993-166.9513c7.6888-32.9545,11.5333-42.8322,34.5998-42.8322,15.3728,0,24.7071,7.1354,24.7071,19.2172,0,4.3979-.5484,10.4364-2.1989,18.1252l-8.2324,35.6969h107.0908l8.2373-36.7989Z"/>
+    <path fill="#fff" d="M682.9658,208.1416c3.2204-12.6251,4.247-24.1635,4.1815-35.1433-.3019-49.9777-39.9993-75.2382-118.5335-75.2382-81.2816,0-116.259,27.4545-133.9112,104.3432l-18.7291,80.7332c-4.2771,18.6737-5.8321,34.0464-5.7565,46.6816.3421,56.0111,51.5175,73.0393,117.4213,73.0393,81.8301,0,115.7306-24.1687,131.7877-92.2665l3.7488-15.9212h-98.8533l-3.2104,14.2707c-4.8105,21.4162-11.9057,28.013-27.2834,28.013-13.7272,0-21.4615-6.0434-21.5269-17.0283-.015-3.2959.5083-6.5919,2.6468-15.9261l9.1129-37.8908h145.5251l13.38-57.6667ZM591.6051,176.2892c.0252,3.8445-.4982,7.689-1.0315,9.8878l-7.4927,32.9495h-48.8707l8.5544-37.3423c3.7488-15.9263,11.9459-23.0667,26.7651-23.0667,14.8292,0,22.0099,6.0384,22.0753,17.5717"/>
+    <path fill="#fff" d="M949.025,222.9739c4.5438-19.7757,6.8737-34.6,7.0246-46.1332.6893-53.8222-37.5185-80.1847-116.7421-80.1847-87.2646,0-120.3449,33.5029-136.2259,102.7028l-17.5768,76.3351c-4.5338,19.7757-6.8686,34.5949-7.0196,46.1332-.6944,54.3657,36.975,80.7332,116.7421,80.7332,86.7162,0,120.8884-34.6,136.2157-102.7028l17.5819-76.8837ZM856.9044,185.078c-.0303,2.7474-.0654,4.9465-1.1976,9.8828l-26.0656,112.0322c-4.5338,19.2273-13.7423,27.4646-29.7994,27.4646-14.4468,0-22.3873-7.1404-22.2213-20.3142.0404-2.7525.0756-6.0484,1.1976-9.8927l26.0809-112.5807c4.5186-18.6737,13.7272-26.911,29.7844-26.911,14.4568,0,22.3973,7.1404,22.2212,20.3191"/>
+    <path fill="#fff" d="M983.0975,110.9167c1.575,0,2.1284-.5536,2.1284-2.1739v-.6491c0-1.1121-.6038-1.6204-1.9472-1.6204h-1.2027v4.4434h1.0215ZM986.0162,123.4664c-.5132-.7397-.6493-1.2479-.6493-2.4506v-3.6129c0-1.9475-.4226-2.4103-2.1788-2.4103h-1.1121v8.4738h-4.8155v-20.7921h7.0848c4.0307,0,5.6057,1.1573,5.6057,4.2167v2.4053c0,2.2242-.7899,3.4268-2.9638,4.0759,2.36.5536,3.1048,1.6204,3.1048,4.4434v3.0091c0,1.2982.2715,1.9473.9711,2.6418h-5.047ZM983.5152,98.6939c-7.7845,0-14.1248,6.4812-14.1248,14.4468,0,8.0563,6.2497,14.4468,14.0744,14.4468,7.8702,0,14.1752-6.4359,14.1752-14.4015,0-8.1518-6.2095-14.4921-14.1248-14.4921M983.4648,129.6255c-9.118,0-16.4344-7.3166-16.4344-16.4848s7.3164-16.4848,16.4848-16.4848c9.2135,0,16.4848,7.2713,16.4848,16.4344,0,9.3092-7.2261,16.5352-16.5352,16.5352"/>
+  </svg>
+  <p class="tagline">... never stops</p>
+  <p class="fine">CIC Orchestration Edition · Internal working note · Not for external distribution</p>
+</footer>
+
+<script>
+function showPersona(name){
+  document.querySelectorAll('.persona-group').forEach(function(g){ g.classList.remove('active'); });
+  document.querySelectorAll('.persona-tab').forEach(function(t){ t.classList.remove('active'); });
+  var group = document.getElementById('persona-' + name);
+  group.classList.add('active');
+  document.querySelector('.persona-tab[data-persona="' + name + '"]').classList.add('active');
+  showModel(name, group.getAttribute('data-default'));
+}
+function showModel(persona, model){
+  document.querySelectorAll('.model-panel[data-persona="' + persona + '"]').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.model-tab[data-persona="' + persona + '"]').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('panel-' + persona + '-' + model).classList.add('active');
+  document.querySelector('.model-tab[data-persona="' + persona + '"][data-model="' + model + '"]').classList.add('active');
+}
+function updateDispute(val){
+  var pct = parseInt(val, 10);
+  var billed = 150;
+  var adminCost = 35;
+  var uncollected = Math.round(billed * (1 - pct / 100));
+  var net = uncollected + adminCost;
+  document.getElementById('disputePct').textContent = pct + '%';
+  document.getElementById('disputeUncollected').textContent = '−$' + uncollected;
+  document.getElementById('disputeNet').textContent = '−$' + net;
+}
+</script>
+
+</body>
+</html>

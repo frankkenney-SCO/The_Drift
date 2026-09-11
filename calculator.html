@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Drift Calculator | Cleo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dark-blue:#00064B; --royal-blue:#0056B3; --cleo-blue:#0083CA; --sky-blue:#00AEEF;
+    --teal:#00A4C9; --dark-gray:#757A83; --light-gray:#F3F4F5; --black:#000000; --white:#FFFFFF;
+    --red:#C0362C; --green:#1D8A4C;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--black);background:var(--white);line-height:1.5;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 28px;}
+  .hero{background:var(--dark-blue);color:var(--white);padding:40px 0 30px;}
+  .hero .logo{height:22px;margin-bottom:22px;display:block;}
+  .hero h1{font-size:26px;font-weight:800;margin:0 0 10px;letter-spacing:-0.01em;max-width:680px;}
+  .hero p{font-size:14.5px;color:#C7D2EE;margin:0;max-width:640px;}
+
+  .persona-tabbar{position:sticky;top:0;z-index:10;background:var(--dark-blue);border-bottom:1px solid rgba(255,255,255,.12);}
+  .persona-tabbar .wrap{display:flex;gap:4px;overflow-x:auto;}
+  .persona-tab{appearance:none;border:none;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:700;color:#9FB3E0;padding:14px 18px 12px;border-bottom:3px solid transparent;white-space:nowrap;}
+  .persona-tab.active{color:var(--white);border-bottom-color:var(--sky-blue);}
+  .persona-tab:hover{color:var(--white);}
+
+  .persona-group{display:none;padding:28px 0 50px;}
+  .persona-group.active{display:block;}
+
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  @media (max-width:760px){.calc-grid{grid-template-columns:1fr;}}
+
+  .panel-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cleo-blue);margin:0 0 14px;}
+
+  .field{margin-bottom:14px;}
+  .field label{display:flex;justify-content:space-between;font-size:13px;color:#26282C;margin-bottom:4px;}
+  .field label .val{font-weight:700;color:var(--cleo-blue);}
+  .field input[type="range"]{width:100%;accent-color:var(--cleo-blue);}
+  .field input[type="number"]{width:100%;padding:7px 9px;border:1px solid var(--light-gray);border-radius:5px;font-size:13.5px;font-family:'Inter',sans-serif;}
+  .field .hint{font-size:11px;color:var(--dark-gray);margin-top:2px;}
+
+  .output-card{background:#FAFBFC;border:1px solid var(--light-gray);border-radius:8px;padding:20px;}
+  .output-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--light-gray);font-size:13.5px;color:#26282C;}
+  .output-row:last-child{border-bottom:none;}
+  .output-row .lbl{color:var(--dark-gray);}
+  .output-row .num{font-weight:700;font-variant-numeric:tabular-nums;}
+  .output-row.total{margin-top:6px;padding-top:14px;border-top:2px solid var(--dark-blue);}
+  .output-row.total .lbl{color:var(--black);font-weight:700;font-size:14.5px;}
+  .output-row.total .num{font-size:20px;color:var(--red);}
+  .flag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;}
+  .flag.ok{background:#E4F8ED;color:var(--green);}
+  .flag.warn{background:#FDECEC;color:var(--red);}
+  .note{font-size:12px;color:var(--dark-gray);margin-top:14px;padding-top:12px;border-top:1px dashed var(--light-gray);}
+
+  footer{background:var(--dark-blue);color:#C7D2EE;padding:32px 0 22px;text-align:center;}
+  footer .tagline{font-size:13px;font-style:italic;color:#9FB3E0;margin:8px 0 12px;}
+  footer .fine{font-size:11px;color:#6E82B8;}
+</style>
+</head>
+<body><div style="background:#00064B;padding:9px 20px;font-family:Inter,sans-serif;font-size:12px;text-align:center;">
+<a href="index.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">Whitepaper</a>&#183;
+<a href="calculator.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">Calculator</a>&#183;
+<a href="models.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">Drift Models</a>&#183;
+<a href="college.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">College Version</a>&#183;
+<a href="eli9.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">4th Grade Version</a>
+</div>
+
+<div class="hero">
+  <div class="wrap">
+    <svg class="logo" viewBox="0 0 1000 402.5604" xmlns="http://www.w3.org/2000/svg" aria-label="Cleo">
+      <polygon fill="#fff" points="462.9977 .0026 353.9496 25.1776 268.6021 394.8625 371.8433 394.8625 463.0127 .0026 462.9977 .0026"/>
+      <path fill="#fff" d="M314.1318,113.6827c2.7474-10.9849,3.8445-21.9646,3.8445-32.4009C317.9763,28.0131,274.5904,0,191.1199,0,100.4987,0,62.0595,29.1151,40.6383,121.9251L10.4364,251.529C2.194,286.6722,0,302.0551,0,316.8843c0,58.2101,39.5414,85.6697,123.5654,85.6697,53.2686,0,91.1645-11.5334,115.3281-36.2454,19.2222-19.2172,29.6584-44.4778,40.0899-93.3635l4.3929-20.8626h-108.1826l-8.7909,38.4394c-6.0384,27.4545-13.7272,35.6969-32.4009,35.6969-17.0232,0-25.809-7.1404-25.809-19.7708,0-4.3929.5435-9.8828,2.7423-19.2221l38.993-166.9513c7.6888-32.9545,11.5333-42.8322,34.5998-42.8322,15.3728,0,24.7071,7.1354,24.7071,19.2172,0,4.3979-.5484,10.4364-2.1989,18.1252l-8.2324,35.6969h107.0908l8.2373-36.7989Z"/>
+      <path fill="#fff" d="M682.9658,208.1416c3.2204-12.6251,4.247-24.1635,4.1815-35.1433-.3019-49.9777-39.9993-75.2382-118.5335-75.2382-81.2816,0-116.259,27.4545-133.9112,104.3432l-18.7291,80.7332c-4.2771,18.6737-5.8321,34.0464-5.7565,46.6816.3421,56.0111,51.5175,73.0393,117.4213,73.0393,81.8301,0,115.7306-24.1687,131.7877-92.2665l3.7488-15.9212h-98.8533l-3.2104,14.2707c-4.8105,21.4162-11.9057,28.013-27.2834,28.013-13.7272,0-21.4615-6.0434-21.5269-17.0283-.015-3.2959.5083-6.5919,2.6468-15.9261l9.1129-37.8908h145.5251l13.38-57.6667ZM591.6051,176.2892c.0252,3.8445-.4982,7.689-1.0315,9.8878l-7.4927,32.9495h-48.8707l8.5544-37.3423c3.7488-15.9263,11.9459-23.0667,26.7651-23.0667,14.8292,0,22.0099,6.0384,22.0753,17.5717"/>
+      <path fill="#fff" d="M949.025,222.9739c4.5438-19.7757,6.8737-34.6,7.0246-46.1332.6893-53.8222-37.5185-80.1847-116.7421-80.1847-87.2646,0-120.3449,33.5029-136.2259,102.7028l-17.5768,76.3351c-4.5338,19.7757-6.8686,34.5949-7.0196,46.1332-.6944,54.3657,36.975,80.7332,116.7421,80.7332,86.7162,0,120.8884-34.6,136.2157-102.7028l17.5819-76.8837ZM856.9044,185.078c-.0303,2.7474-.0654,4.9465-1.1976,9.8828l-26.0656,112.0322c-4.5338,19.2273-13.7423,27.4646-29.7994,27.4646-14.4468,0-22.3873-7.1404-22.2213-20.3142.0404-2.7525.0756-6.0484,1.1976-9.8927l26.0809-112.5807c4.5186-18.6737,13.7272-26.911,29.7844-26.911,14.4568,0,22.3973,7.1404,22.2212,20.3191"/>
+      <path fill="#fff" d="M983.0975,110.9167c1.575,0,2.1284-.5536,2.1284-2.1739v-.6491c0-1.1121-.6038-1.6204-1.9472-1.6204h-1.2027v4.4434h1.0215ZM986.0162,123.4664c-.5132-.7397-.6493-1.2479-.6493-2.4506v-3.6129c0-1.9475-.4226-2.4103-2.1788-2.4103h-1.1121v8.4738h-4.8155v-20.7921h7.0848c4.0307,0,5.6057,1.1573,5.6057,4.2167v2.4053c0,2.2242-.7899,3.4268-2.9638,4.0759,2.36.5536,3.1048,1.6204,3.1048,4.4434v3.0091c0,1.2982.2715,1.9473.9711,2.6418h-5.047ZM983.5152,98.6939c-7.7845,0-14.1248,6.4812-14.1248,14.4468,0,8.0563,6.2497,14.4468,14.0744,14.4468,7.8702,0,14.1752-6.4359,14.1752-14.4015,0-8.1518-6.2095-14.4921-14.1248-14.4921M983.4648,129.6255c-9.118,0-16.4344-7.3166-16.4344-16.4848s7.3164-16.4848,16.4848-16.4848c9.2135,0,16.4848,7.2713,16.4848,16.4344,0,9.3092-7.2261,16.5352-16.5352,16.5352"/>
+    </svg>
+    <h1>The Drift Calculator</h1>
+    <p>Put your own numbers in. Margin Drift and Utilization Drift, computed live, per business model — diagnostic only, nothing here files a claim or reroutes a truck for you.</p>
+  </div>
+</div>
+
+<nav class="persona-tabbar">
+  <div class="wrap">
+    <button class="persona-tab active" data-persona="carrier" onclick="showPersona('carrier')">Asset-Based Carrier</button>
+    <button class="persona-tab" data-persona="warehouse" onclick="showPersona('warehouse')">Warehouse / 3PL</button>
+    <button class="persona-tab" data-persona="brokerage" onclick="showPersona('brokerage')">Brokerage</button>
+  </div>
+</nav>
+
+<!-- ============ CARRIER ============ -->
+<div class="persona-group active" id="persona-carrier">
+  <div class="wrap calc-grid">
+    <div>
+      <p class="panel-title">Inputs</p>
+      <div class="field"><label>Loads per month <span class="val" id="c_loads_v">100</span></label>
+        <input type="range" id="c_loads" min="10" max="500" value="100" oninput="calcCarrier()"></div>
+      <div class="field"><label>Avg miles per load <span class="val" id="c_miles_v">500</span></label>
+        <input type="range" id="c_miles" min="100" max="1500" value="500" oninput="calcCarrier()"></div>
+      <div class="field"><label>Rate per mile ($) <span class="val" id="c_rate_v">2.50</span></label>
+        <input type="range" id="c_rate" min="1" max="5" step="0.05" value="2.50" oninput="calcCarrier()"></div>
+      <div class="field"><label>Deadhead % (dead miles / total) <span class="val" id="c_dh_v">15%</span></label>
+        <input type="range" id="c_dh" min="0" max="50" value="15" oninput="calcCarrier()"></div>
+      <div class="field"><label>Avg detention hours per load <span class="val" id="c_dethrs_v">2.0</span></label>
+        <input type="range" id="c_dethrs" min="0" max="8" step="0.25" value="2" oninput="calcCarrier()"></div>
+      <div class="field"><label>Detention rate ($/hr) <span class="val" id="c_detrate_v">65</span></label>
+        <input type="range" id="c_detrate" min="20" max="120" value="65" oninput="calcCarrier()"></div>
+      <div class="field"><label>Detention collected <span class="val" id="c_detcoll_v">55%</span></label>
+        <input type="range" id="c_detcoll" min="0" max="100" value="55" oninput="calcCarrier()">
+        <div class="hint">The share of billed detention that actually survives reconciliation and gets paid.</div></div>
+    </div>
+    <div>
+      <p class="panel-title">Monthly Drift Exposure</p>
+      <div class="output-card">
+        <div class="output-row"><span class="lbl">Loaded revenue</span><span class="num" id="c_out_revenue">$0</span></div>
+        <div class="output-row"><span class="lbl">Utilization Drift (deadhead opportunity cost)</span><span class="num" id="c_out_util">$0</span></div>
+        <div class="output-row"><span class="lbl">Detention billed</span><span class="num" id="c_out_detbilled">$0</span></div>
+        <div class="output-row"><span class="lbl">Detention collected</span><span class="num" id="c_out_detcollected">$0</span></div>
+        <div class="output-row"><span class="lbl">Margin Drift (uncollected detention)</span><span class="num" id="c_out_margin">$0</span></div>
+        <div class="output-row total"><span class="lbl">Total drift exposure / month</span><span class="num" id="c_out_total">$0</span></div>
+      </div>
+      <p class="note">Utilization Drift is a lever the carrier's own dispatch and lane planning controls. Margin Drift here is the documentation/reconciliation gap — the part CIC-style clean paperwork moves directly.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WAREHOUSE ============ -->
+<div class="persona-group" id="persona-warehouse">
+  <div class="wrap calc-grid">
+    <div>
+      <p class="panel-title">Inputs</p>
+      <div class="field"><label>Storage slots / dock doors <span class="val" id="w_slots_v">50</span></label>
+        <input type="range" id="w_slots" min="5" max="300" value="50" oninput="calcWarehouse()"></div>
+      <div class="field"><label>Daily rate per slot ($) <span class="val" id="w_rate_v">40</span></label>
+        <input type="range" id="w_rate" min="5" max="150" value="40" oninput="calcWarehouse()"></div>
+      <div class="field"><label>Idle % (unassigned slot-days) <span class="val" id="w_idle_v">20%</span></label>
+        <input type="range" id="w_idle" min="0" max="60" value="20" oninput="calcWarehouse()"></div>
+      <div class="field"><label>Accessorials billed / month ($) <span class="val" id="w_acc_v">8,000</span></label>
+        <input type="range" id="w_acc" min="0" max="40000" step="500" value="8000" oninput="calcWarehouse()"></div>
+      <div class="field"><label>Accessorials collected <span class="val" id="w_acccoll_v">65%</span></label>
+        <input type="range" id="w_acccoll" min="0" max="100" value="65" oninput="calcWarehouse()"></div>
+    </div>
+    <div>
+      <p class="panel-title">Monthly Drift Exposure</p>
+      <div class="output-card">
+        <div class="output-row"><span class="lbl">Total slot-days available</span><span class="num" id="w_out_slotdays">0</span></div>
+        <div class="output-row"><span class="lbl">Utilization Drift (idle slot-days × rate)</span><span class="num" id="w_out_util">$0</span></div>
+        <div class="output-row"><span class="lbl">Accessorials uncollected</span><span class="num" id="w_out_acc">$0</span></div>
+        <div class="output-row total"><span class="lbl">Total drift exposure / month</span><span class="num" id="w_out_total">$0</span></div>
+      </div>
+      <p class="note">Same shape as the carrier's truck-hours, just square footage instead of miles: how much of a fixed, owned asset produced no revenue this month.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BROKERAGE ============ -->
+<div class="persona-group" id="persona-brokerage">
+  <div class="wrap calc-grid">
+    <div>
+      <p class="panel-title">Inputs</p>
+      <div class="field"><label>Loads per month <span class="val" id="b_loads_v">200</span></label>
+        <input type="range" id="b_loads" min="10" max="2000" value="200" oninput="calcBrokerage()"></div>
+      <div class="field"><label>Avg revenue per load ($) <span class="val" id="b_rev_v">2,000</span></label>
+        <input type="range" id="b_rev" min="200" max="6000" step="50" value="2000" oninput="calcBrokerage()"></div>
+      <div class="field"><label>Target margin % <span class="val" id="b_margin_v">12%</span></label>
+        <input type="range" id="b_margin" min="2" max="30" value="12" oninput="calcBrokerage()"></div>
+      <div class="field"><label>Current OTRI <span class="val" id="b_otri_v">14%</span></label>
+        <input type="range" id="b_otri" min="1" max="30" value="14" oninput="calcBrokerage()">
+        <div class="hint">Drives guidance-band width — the band widens automatically the further the market sits from a balanced ~8%.</div></div>
+      <div class="field"><label>Contract-committed share of book <span class="val" id="b_contract_v">60%</span></label>
+        <input type="range" id="b_contract" min="0" max="100" value="60" oninput="calcBrokerage()"></div>
+      <div class="field"><label>Loads with a detention dispute <span class="val" id="b_disprate_v">20%</span></label>
+        <input type="range" id="b_disprate" min="0" max="60" value="20" oninput="calcBrokerage()"></div>
+      <div class="field"><label>Avg detention billed per disputed load ($) <span class="val" id="b_detbill_v">150</span></label>
+        <input type="range" id="b_detbill" min="0" max="500" step="10" value="150" oninput="calcBrokerage()"></div>
+      <div class="field"><label>Detention collected <span class="val" id="b_detcoll_v">30%</span></label>
+        <input type="range" id="b_detcoll" min="0" max="100" value="30" oninput="calcBrokerage()"></div>
+      <div class="field"><label>Admin cost per dispute ($) <span class="val" id="b_admin_v">35</span></label>
+        <input type="range" id="b_admin" min="0" max="150" value="35" oninput="calcBrokerage()"></div>
+    </div>
+    <div>
+      <p class="panel-title">Monthly Drift Exposure</p>
+      <div class="output-card">
+        <div class="output-row"><span class="lbl">Target margin (guidance center)</span><span class="num" id="b_out_targetmargin">$0</span></div>
+        <div class="output-row"><span class="lbl">Guidance band (this OTRI)</span><span class="num" id="b_out_band">±0%</span></div>
+        <div class="output-row"><span class="lbl">Detention billed (disputed loads)</span><span class="num" id="b_out_detbilled">$0</span></div>
+        <div class="output-row"><span class="lbl">Detention uncollected</span><span class="num" id="b_out_detunc">$0</span></div>
+        <div class="output-row"><span class="lbl">Admin / dispute cost</span><span class="num" id="b_out_admin">$0</span></div>
+        <div class="output-row"><span class="lbl">Margin Drift (detention side)</span><span class="num" id="b_out_margin">$0</span></div>
+        <div class="output-row total"><span class="lbl">Total drift exposure / month</span><span class="num" id="b_out_total">$0</span></div>
+      </div>
+      <div class="output-card" style="margin-top:16px;">
+        <div class="output-row"><span class="lbl">Regulatory exposure <span class="hint">(illustrative — % of margin depending on spread invisibility, if FMCSA transparency rule finalizes)</span></span><span class="num" id="b_out_regexp">$0<span class="flag" id="b_out_regflag"></span></span></div>
+      </div>
+      <p class="note">Band width and regulatory exposure are directional estimates meant to prompt the right conversation, not audited figures — the detention split is the one built on the reconciliation mechanics we verified against actual invoicing practice.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p class="tagline">... never stops</p>
+  <p class="fine">CIC Orchestration Edition · Internal working tool · Diagnostic only — does not take action</p>
+</footer>
+
+<script>
+function showPersona(name){
+  document.querySelectorAll('.persona-group').forEach(function(g){ g.classList.remove('active'); });
+  document.querySelectorAll('.persona-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('persona-' + name).classList.add('active');
+  document.querySelector('.persona-tab[data-persona="' + name + '"]').classList.add('active');
+}
+function fmt(n){ return '$' + Math.round(n).toLocaleString('en-US'); }
+
+function calcCarrier(){
+  var loads = +document.getElementById('c_loads').value;
+  var miles = +document.getElementById('c_miles').value;
+  var rate = +document.getElementById('c_rate').value;
+  var dh = +document.getElementById('c_dh').value;
+  var dethrs = +document.getElementById('c_dethrs').value;
+  var detrate = +document.getElementById('c_detrate').value;
+  var detcoll = +document.getElementById('c_detcoll').value;
+
+  document.getElementById('c_loads_v').textContent = loads;
+  document.getElementById('c_miles_v').textContent = miles;
+  document.getElementById('c_rate_v').textContent = rate.toFixed(2);
+  document.getElementById('c_dh_v').textContent = dh + '%';
+  document.getElementById('c_dethrs_v').textContent = dethrs.toFixed(2);
+  document.getElementById('c_detrate_v').textContent = detrate;
+  document.getElementById('c_detcoll_v').textContent = detcoll + '%';
+
+  var revenue = loads * miles * rate;
+  var deadheadMiles = miles * (dh/100);
+  var utilDrift = loads * deadheadMiles * rate;
+  var detBilled = loads * dethrs * detrate;
+  var detCollected = detBilled * (detcoll/100);
+  var marginDrift = detBilled - detCollected;
+  var total = utilDrift + marginDrift;
+
+  document.getElementById('c_out_revenue').textContent = fmt(revenue);
+  document.getElementById('c_out_util').textContent = fmt(utilDrift);
+  document.getElementById('c_out_detbilled').textContent = fmt(detBilled);
+  document.getElementById('c_out_detcollected').textContent = fmt(detCollected);
+  document.getElementById('c_out_margin').textContent = fmt(marginDrift);
+  document.getElementById('c_out_total').textContent = fmt(total);
+}
+
+function calcWarehouse(){
+  var slots = +document.getElementById('w_slots').value;
+  var rate = +document.getElementById('w_rate').value;
+  var idle = +document.getElementById('w_idle').value;
+  var acc = +document.getElementById('w_acc').value;
+  var acccoll = +document.getElementById('w_acccoll').value;
+
+  document.getElementById('w_slots_v').textContent = slots;
+  document.getElementById('w_rate_v').textContent = rate;
+  document.getElementById('w_idle_v').textContent = idle + '%';
+  document.getElementById('w_acc_v').textContent = acc.toLocaleString('en-US');
+  document.getElementById('w_acccoll_v').textContent = acccoll + '%';
+
+  var slotDays = slots * 30;
+  var idleSlotDays = slotDays * (idle/100);
+  var utilDrift = idleSlotDays * rate;
+  var accUncollected = acc * (1 - acccoll/100);
+  var total = utilDrift + accUncollected;
+
+  document.getElementById('w_out_slotdays').textContent = Math.round(slotDays).toLocaleString('en-US');
+  document.getElementById('w_out_util').textContent = fmt(utilDrift);
+  document.getElementById('w_out_acc').textContent = fmt(accUncollected);
+  document.getElementById('w_out_total').textContent = fmt(total);
+}
+
+function calcBrokerage(){
+  var loads = +document.getElementById('b_loads').value;
+  var rev = +document.getElementById('b_rev').value;
+  var marginPct = +document.getElementById('b_margin').value;
+  var otri = +document.getElementById('b_otri').value;
+  var contract = +document.getElementById('b_contract').value;
+  var disprate = +document.getElementById('b_disprate').value;
+  var detbill = +document.getElementById('b_detbill').value;
+  var detcoll = +document.getElementById('b_detcoll').value;
+  var admin = +document.getElementById('b_admin').value;
+
+  document.getElementById('b_loads_v').textContent = loads;
+  document.getElementById('b_rev_v').textContent = rev.toLocaleString('en-US');
+  document.getElementById('b_margin_v').textContent = marginPct + '%';
+  document.getElementById('b_otri_v').textContent = otri + '%';
+  document.getElementById('b_contract_v').textContent = contract + '%';
+  document.getElementById('b_disprate_v').textContent = disprate + '%';
+  document.getElementById('b_detbill_v').textContent = detbill;
+  document.getElementById('b_detcoll_v').textContent = detcoll + '%';
+  document.getElementById('b_admin_v').textContent = admin;
+
+  var targetMargin = loads * rev * (marginPct/100);
+  var bandHalfWidth = 2 + 0.15 * Math.abs(otri - 8);
+
+  var disputedLoads = loads * (disprate/100);
+  var detBilledTotal = disputedLoads * detbill;
+  var detUncollected = detBilledTotal * (1 - detcoll/100);
+  var adminTotal = disputedLoads * admin;
+  var marginDrift = detUncollected + adminTotal;
+  var total = marginDrift;
+
+  var regExpPct = (contract/100) * 0.30;
+  var regExpUSD = targetMargin * regExpPct;
+
+  document.getElementById('b_out_targetmargin').textContent = fmt(targetMargin);
+  document.getElementById('b_out_band').textContent = '±' + bandHalfWidth.toFixed(1) + ' pts';
+  document.getElementById('b_out_detbilled').textContent = fmt(detBilledTotal);
+  document.getElementById('b_out_detunc').textContent = fmt(detUncollected);
+  document.getElementById('b_out_admin').textContent = fmt(adminTotal);
+  document.getElementById('b_out_margin').textContent = fmt(marginDrift);
+  document.getElementById('b_out_total').textContent = fmt(total);
+  document.getElementById('b_out_regexp').childNodes[0].textContent = fmt(regExpUSD) + ' ';
+  var flag = document.getElementById('b_out_regflag');
+  if (contract >= 50){ flag.textContent = 'contract-heavy'; flag.className = 'flag warn'; }
+  else { flag.textContent = 'spot-leaning'; flag.className = 'flag ok'; }
+}
+
+calcCarrier();
+calcWarehouse();
+calcBrokerage();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drift, Explained for Someone Who Just Declared Supply Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --dark-blue:#00064B; --cleo-blue:#0083CA; --sky-blue:#00AEEF; --dark-gray:#757A83; --light-gray:#F3F4F5; --red:#C0362C; }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#26282C;background:#fff;line-height:1.65;}
+  .wrap{max-width:720px;margin:0 auto;padding:0 26px;}
+  .hero{background:var(--dark-blue);color:#fff;padding:48px 0 36px;}
+  .hero .kicker{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sky-blue);}
+  .hero h1{font-size:30px;font-weight:800;margin:8px 0 12px;line-height:1.2;}
+  .hero p{font-size:15.5px;color:#C7D2EE;margin:0;}
+  article{padding:36px 0;}
+  h2{font-size:20px;font-weight:800;color:var(--dark-blue);margin:36px 0 12px;}
+  p{font-size:15.5px;margin:0 0 15px;}
+  p.lede{font-size:17px;font-weight:500;}
+  .callout{background:var(--light-gray);border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px;}
+  .tldr{border:2px dashed var(--cleo-blue);border-radius:8px;padding:14px 18px;margin:16px 0;font-size:14px;}
+  .tldr b{color:var(--cleo-blue);}
+  ul{font-size:15.5px;padding-left:20px;}
+  footer{background:var(--dark-blue);color:#C7D2EE;padding:30px 0;text-align:center;font-size:13px;}
+</style>
+</head>
+<body><div style="background:#00064B;padding:9px 20px;font-family:Inter,sans-serif;font-size:12px;text-align:center;">
+<a href="index.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">Whitepaper</a>&#183;
+<a href="calculator.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">Calculator</a>&#183;
+<a href="models.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">Drift Models</a>&#183;
+<a href="college.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">College Version</a>&#183;
+<a href="eli9.html" style="color:#9FB3E0;text-decoration:none;margin:0 8px;">4th Grade Version</a>
+</div>
+<div class="hero">
+  <div class="wrap">
+    <p class="kicker">Frank Kenney · for anyone who just declared Supply Chain</p>
+    <h1>Drift: The Thing Your 101 Textbook Skips</h1>
+    <p>You're going to spend a whole semester learning EOQ formulas. Here's the part nobody puts on the syllabus.</p>
+  </div>
+</div>
+
+<article class="wrap">
+  <p class="lede">You know how you and your roommates split rent, and somehow the numbers never quite add up, and nobody can ever say exactly where the missing $40 went? Congrats. You already understand 90% of what I'm about to explain, and it's going to be worth actual money to you someday.</p>
+
+  <h2>The $15 billion thing</h2>
+  <p>Trucking loses about $15 billion a year, just from unpaid detention (that's the fee a truck driver's owed when a warehouse makes them sit around waiting). If someone stole that in one shot, it'd be international news. Instead it disappears in amounts so small nobody bothers chasing any single one. Thirty cents here, a dollar there, across millions of transactions. Nobody's a thief. It just evaporates.</p>
+  <div class="tldr"><b>TL;DR:</b> stealing $15B gets you caught. Losing $15B one dime at a time gets you nothing but a shrug.</div>
+
+  <h2>The one rule that explains everything</h2>
+  <p>Every business runs on a promise made before anyone knows if it'll hold up. Sound familiar? It's exactly like telling your professor "I'll have the paper done by Friday" before you've opened your laptop. The gap between the promise and what actually happens is called <b>Drift</b>, and it's the entire concept your career is going to be built on managing.</p>
+
+  <h2>Four things, three models (this part's actually on your final, probably)</h2>
+  <p>Any transaction can only ever be judged on four things: <b>Value</b> (is the money there), <b>Disposition</b> (what state is it in), <b>Volume</b> (how much), <b>Time</b> (how long). Pair them up and you get exactly three models:</p>
+  <ul>
+    <li><b>Margin Drift</b> — did you get charged what you thought you'd get charged. Think: DoorDash quotes you $14, somehow it's $19 by checkout.</li>
+    <li><b>Utilization Drift</b> — is the asset actually being used. Your Peloton counts. So does an empty truck.</li>
+    <li><b>Capture Drift</b> — did the opportunity even get touched. Group project message nobody replied to. Tender nobody answered. Same energy.</li>
+  </ul>
+  <div class="callout">Real talk: a company called Convoy raised billions optimizing pure Volume and basically ignored Margin. It's a case study now, for exactly the wrong reasons. Don't be Convoy. Watch all three, never blend them into one number that lies to you.</div>
+
+  <h2>Carriers vs. brokers, or: why your econ professor's "middleman" example finally makes sense</h2>
+  <p>A trucking company owns the truck. They know their costs before they quote you, so their margin erodes slow and steady, like a phone battery draining. A freight broker owns nothing. They're basically your friend who resells concert tickets before knowing what the original seller's actually going to charge them. Sometimes they make more, sometimes less, and it's genuinely a coin flip until the deal locks in. Same industry, completely different risk shape, which is exactly the kind of thing that shows up on an exam disguised as a "compare and contrast" question.</p>
+
+  <h2>The actual numbers, so you sound smart in section</h2>
+  <ul>
+    <li>Trucks run empty about 16.5% of miles (ATRI, 2026)</li>
+    <li>94.5% of carriers bill for detention. Fewer than half get paid.</li>
+    <li>Spot and contract rates for dry van are basically tied right now, first time since 2022, which is a genuinely big deal if you're a broker</li>
+  </ul>
+
+  <h2>Why you can't just "check harder"</h2>
+  <p>This is the part that should make you want to actually pay attention in this class instead of doing the reading the morning it's due. You can't catch this by staring at a spreadsheet once a semester. By the time the number's big enough to notice, it's already gone, scattered across a thousand transactions with no thread left to pull. Catching it requires something watching every single transaction as it happens. That's not a person's job. That's a systems job. Which is, unsubtly, the actual point of your major.</p>
+
+  <p><b>Reply if you actually want the real calculator</b> — the one with all the sourced numbers, built for grown-ups, not the syllabus version. Might make a good final paper citation, not gonna lie.</p>
+</article>
+
+<footer>Frank Kenney · Tech Dude / VP of GTM</footer>
+</body>
+</html>
